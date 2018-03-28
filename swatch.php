@@ -3451,11 +3451,11 @@ function callDLA(s,j) {
 	class Version {
 		public function __construct($vbool)  {
 			if ($vbool == 0) {
-				echo 'SCHOOL PHP - Version 1.3.6 Release 3426<br>';
+				echo 'SCHOOL PHP - Version 1.3.6 Release 3465<br>';
 				echo 'Swatch Container Hypertext Object Oriented Library + API Handler for PHP';
 			}
 			else if ($vbool == 1)
-				echo 'SCHOOL v1.3.6 Release 3426';
+				echo 'SCHOOL v1.3.6 Release 3465';
 			else
 				for ($i = 0 ; $i < $vbool ; $i++)
 					echo "Was \$vbool too complex an idea for you? ... ";
