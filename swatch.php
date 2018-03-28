@@ -3276,11 +3276,11 @@ function callDLA(s,j) {
 
 		public function __construct($fname, $ex_in) {
 			$this->filename = $fname;
-			$this->fwriter = new writeStream();
-			$this->fwriter->add($this->filename,0);
 			$this->ext_int = $ex_in;
 			$this->mCSS = new mMap();
 			$this->imps = new Set();
+			$this->fwriter = new writeStream();
+			$this->freader = new readStream();
 		}
 
 		public function addText($txt) {
@@ -3303,23 +3303,26 @@ function callDLA(s,j) {
 			echo '1. Create a new Map()<br>';
 			echo '2. Each Key will need to contain one property<br>';
 			echo '3. Each Value must contain associated value<br>';
-			echo '4. Next, contain them in \$this->mCSS by using \$this ->insContent(\$selector,\$map)<br>';
-			echo '5. Each Key in \$this->mCSS (\$this ->mCSS->mname) MUST be the selector(s) (classname, id, tag)<br>';
-			echo ' * hint: pull nested map from \$this->mCSS->mmap, then use Map() commands,<br>';
-			echo ' and reinsert it with \$this->mCSS->replace()<br>';
+			echo "4. Next, contain them in \$this->mCSS by using \$this ->insContent(\$selector,\$map)<br>";
+			echo "5. Each Key in \$this->mCSS (\$this ->mCSS->mname) MUST be the selector(s) (classname, id, tag)<br>";
+			echo " * hint: pull nested map from \$this->mCSS->mmap, then use Map() commands,<br>";
+			echo " and reinsert it with \$this->mCSS->replace()<br>";
 		}
 
-		public function write() {
+		public function write($rw_append = 1) {
 			if (sizeof($this->mCSS) == 0)
 				return -1;
 			if ($this->fwriter->size() == 0)
 				return -1;
+
+			$this->fwriter->add($this->filename,$rw_append);
+
 			if (!file_exists($this->filename)) {
 				$this->fwriter->touch($this->filename);
-			} 
+			}
 			if (file_exists($this->filename)) {
 				$this->fwriter->Iter();
-				if ($this->ext_int == 0) {
+				if ($this->ext_int == 1) {
 					$this->fwriter->buf = '<style>';
 					$this->fwriter->writeBuf();
 				}
@@ -3327,7 +3330,7 @@ function callDLA(s,j) {
 				$this->mCSS->sync();
 				$i = 0;
 				while (sizeof($this->imps->dat) > $i) {
-					$this->fwriter->buf = "@import url('" . $this->imps->dat[$i] . "');";
+					$this->fwriter->buf = "@import url(\"" . $this->imps->dat[$i] . "\");";
 					$this->fwriter->writeBuf();
 					$i++;
 				}
@@ -3344,7 +3347,7 @@ function callDLA(s,j) {
 					$this->fwriter->buf = '}';
 					$this->fwriter->writeBuf();			
 				} while ($this->mCSS->Iter());
-				if ($this->ext_int == 0) {
+				if ($this->ext_int == 1) {
 					$this->fwriter->buf = '</style>';
 					$this->fwriter->writeBuf();
 				}
@@ -3354,10 +3357,7 @@ function callDLA(s,j) {
 		}
 
 		public function cssMap($s, $bool) {
-			// If you don't have one, but need an example,
-			// uncomment this line and run it
-			//$s = "[ 'oids': [ 'aoi,sd': \"asoda\", 'askd': 9_312, 'ajds': [ 'cucre': [ 'asoidj': \"asdj\", 'aei': [ 'askd': \"adk\" ] ], 'ccsio': [ 'oidfa': \"adfd\" ], 'asdjnae': \"cnaa\", 'asidj': \"sdasa\" ] ] ]";
-			$s = "@import url('dss.css'); #id .classname p b { property:value; property-1: value; } .classname p b { property:value; property-1: value; }";
+
 			preg_match_all("/[\{\}]|[0-9\.]+[;$]|[\"'#@\(\)>\-A-z0-9\s\.]+[\{:;$]{1}/", $s, $tok);
 
 			$lvl = 0;
@@ -3378,15 +3378,15 @@ function callDLA(s,j) {
 				if (preg_match("/[\{]/", $temp))
 					$lvl = 1;
 				$imps = 0;
-				if ($i + 1 < sizeof($tmp) && preg_match("/[\"'#@\(\)>\-A-z0-9\s\.]+[\{:$]{0}/", $temp, $t)) {
+				if ($i + 1 < sizeof($tmp) && preg_match("/[#@\,_\(\)>\-A-z0-9\s\.]+[\{:$]{0}/", $temp, $t)) {
 					if (preg_match("/[\{]/", $temp, $tk)) {
-						$output = $output . '<br>' . $t[0] . ' ' . $tk[0] . '<br>';
-						$mapname = $temp;
+						$output = $output . '<br>' . $t[0] . ' {<br>';
+						$mapname = $t[0];
 					}
 					else if (preg_match("/[@]/", $temp)) {
 						preg_match_all("/[\@impor]+[t\s$]{1,2}|[url\(][\"'$]{1}+|[_\-A-z0-9\s\.]+|['\"\)$]{2}+|[;$]/", $temp, $tk);
 						$this->imps->add($tk[0][3]);
-						$output = $output . '<br>@import ("' . $tk[0][3] . '");<br>';
+						$output = $output . '<br>@import url("' . $tk[0][3] . '");<br>';
 					}
 					else {
 						$i++;
@@ -3451,11 +3451,11 @@ function callDLA(s,j) {
 	class Version {
 		public function __construct($vbool)  {
 			if ($vbool == 0) {
-				echo 'SCHOOL PHP - Version 1.3.7 Release 3465<br>';
+				echo 'SCHOOL PHP - Version 1.3.6 Release 3426<br>';
 				echo 'Swatch Container Hypertext Object Oriented Library + API Handler for PHP';
 			}
 			else if ($vbool == 1)
-				echo 'SCHOOL v1.3.7 Release 3465';
+				echo 'SCHOOL v1.3.6 Release 3426';
 			else
 				for ($i = 0 ; $i < $vbool ; $i++)
 					echo "Was \$vbool too complex an idea for you? ... ";
