@@ -131,16 +131,19 @@ echo json_encode($n);
 // $this->apiRecv()
 $j = $y->create($n);
 echo '<br><br>' . $j;
+$y->clear();
 // This is my favorite part! -- Again, the '1' makes the tree
 $re = $y->apiRecv($j, 1);
 echo '<br><br>' . json_encode($re);
 echo '<br><br>' . json_encode($y->apiMap);
 $y->clear();
-//$newMap->
+
 // Now! CSS!!
 
+$ts = "@import url('dss.css'); #id .classname p b { property:value; property-1: value; } .classname p b { property:value; property-1: value; }";
+
 $o = new css("readcss.css", 1);
-$eq = $o->cssMap($s,1);
+$eq = $o->cssMap($ts,1);
 $mh = $o->create($eq);
 echo $mh;
 $o->fwriter->setIndex(0);
